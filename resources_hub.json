@@ -1,0 +1,48 @@
+{
+  "benchmarks":{
+    "SemEval 2020 Task 1":{
+      "EN": {
+      	"semeval": "https://www2.ims.uni-stuttgart.de/data/sem-eval-ulscd/semeval2020_ulscd_eng.zip"
+      },
+      "DE": {
+      	"semeval": "https://www2.ims.uni-stuttgart.de/data/sem-eval-ulscd/semeval2020_ulscd_ger.zip"
+      },
+      "SV": {
+      	"semeval": "https://zenodo.org/record/3730550/files/semeval2020_ulscd_swe.zip"
+      },
+      "LA": {
+      	"semeval": "https://zenodo.org/record/3734089/files/semeval2020_ulscd_lat.zip"
+      }
+    },
+    "DWUG":{
+      "EN":{ 
+        "2.0.1":"https://zenodo.org/records/7387261/files/dwug_en.zip",
+        "2.0.0":"https://zenodo.org/records/5796878/files/dwug_en.zip",
+        "1.0.0":"https://zenodo.org/records/5544444/files/dwug_en.zip"
+      },
+      "SV":{
+        "2.0.1":"https://zenodo.org/records/7389506/files/dwug_sv.zip",
+        "2.0.0":"https://zenodo.org/records/5801358/files/dwug_sv.zip",
+        "1.0.0":"https://zenodo.org/records/5090648/files/dwug_sv.zip"
+      },
+      "LA": {
+        "1.0.0":"https://zenodo.org/records/5255228/files/dwug_la.zip"
+      },
+      "DE":{ 
+        "2.3.0":"https://zenodo.org/records/7441645/files/dwug_de.zip",
+        "2.2.0":"https://zenodo.org/records/7386402/files/dwug_de.zip",
+        "2.1.0":"https://zenodo.org/records/7295410/files/dwug_de.zip",
+        "2.0.0":"https://zenodo.org/records/5796871/files/dwug_de.zip",
+        "1.1.0":"https://zenodo.org/records/5544198/files/dwug_de.zip",
+        "1.0.0":"https://zenodo.org/records/5543724/files/dwug_de.zip"
+      },
+      "ES":{ 
+        "4.0.0 (full)":"https://zenodo.org/records/6433667/files/dwug_es.zip",
+        "3.0.0 (test)":"https://zenodo.org/records/6433398/files/dwug_es.zip",
+        "2.0.0 (discarded)":"https://zenodo.org/records/6433350/files/dwug_es.zip",
+        "1.0.1 (development)":"https://zenodo.org/records/6433203/files/dwug_es.zip",
+        "1.0.0 (development)":"https://zenodo.org/records/6300105/files/dwug_es.zip"
+      }
+    }
+  }
+}
