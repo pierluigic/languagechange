@@ -11,11 +11,11 @@ class Evaluation():
         pass
 
 
-    def print_tsv(self, output_source):
+    def print_tsv(self, input_result, output_source):
         pass
 
-    def print_lateX(self, output_source):
+    def print_lateX(self, input_result, output_source):
         pass
 
-    def print_console(self, output_source):
+    def print_console(self, input_result, output_source):
         pass

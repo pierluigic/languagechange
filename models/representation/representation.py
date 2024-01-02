@@ -1,7 +1,7 @@
 import subprocess
 import WordTransformer
 
-class MeaningModel():
+class RepresentationModel():
 
     def __init__(self):
         pass
@@ -10,7 +10,7 @@ class MeaningModel():
         pass
 
 
-class StaticEmbedding(MeaningModel):
+class StaticEmbedding(RepresentationModel):
 
     def __init__(self):
         pass
@@ -78,7 +78,7 @@ class RandomIndexing(StaticEmbedding):
         pass
 
 
-class ContextualizedEmbedding(MeaningModel):
+class ContextualizedEmbedding(RepresentationModel):
 
     def __init__(self):
         pass
