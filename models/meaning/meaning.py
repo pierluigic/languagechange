@@ -1,13 +1,14 @@
-import subprocess
-import WordTransformer
+from abc import ABC
 
-class MeaningModel():
+class MeaningModel(ABC):
 
     def __init__(self):
         pass
 
+class WordSenseInduction(MeaningModel):
+    pass
 
-# tmp
+# todo
 class SGNS(StaticEmbedding):
 
     def __init__(self):

@@ -1,20 +1,21 @@
-from .representation import StaticEmbedding
-
-class PPMI(StaticEmbedding):
-
-    def __init__(self):
-        self.align_strategies = {'OP', 'SRV', 'WI'}
-        pass
+from .representation import StaticModel
 
 
-class SVD(StaticEmbedding):
+class PPMI(StaticModel):
 
     def __init__(self):
         self.align_strategies = {'OP', 'SRV', 'WI'}
         pass
 
 
-class RandomIndexing(StaticEmbedding):
+class SVD(StaticModel):
+
+    def __init__(self):
+        self.align_strategies = {'OP', 'SRV', 'WI'}
+        pass
+
+
+class RandomIndexing(StaticModel):
 
     def __init__(self):
         self.align_strategies = {'OP', 'SRV', 'WI'}

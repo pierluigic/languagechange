@@ -1,14 +1,36 @@
 import torch
+from datasets import Dataset
 import numpy as np
 from collections import defaultdict
 from typing import Tuple, List, Union, Any
 from languagechange.usages import TargetUsage
-from .representation import ContextualizedEmbedding
+from .representation import ContextualizedModel
 from transformers import AutoTokenizer, AutoModel
 from WordTransformer import WordTransformer, InputExample
 
+class ContextualizedEmbeddings(Dataset):
+    def __str__(self):
+        return 'ContextualizedEmbeddings({\n    features: ' + f'{self.column_names}' + f',\n    num_rows: {self.num_rows}' + '\n})'
 
-class XL_LEXEME(ContextualizedEmbedding):
+    def __repr__(self):
+        return self.__str__()
+
+    @staticmethod
+    def from_usages(target_usages: List[TargetUsage], raw_embedding: np.array):
+        columns = defaultdict(list)
+
+        for i, target_usage in enumerate(target_usages):
+            columns['token'].append(target_usage.token)
+            columns['target'].append(target_usage.target)
+            columns['context'].append(target_usage.context)
+            columns['start'].append(target_usage.start)
+            columns['end'].append(target_usage.end)
+            columns['embedding'].append(raw_embedding[i])
+
+        embs = ContextualizedEmbeddings.from_dict(columns)
+        return embs.with_format("np")
+
+class XL_LEXEME(ContextualizedModel):
 
     def __init__(self, pretrained_model: str = 'pierluigic/xl-lexeme',
                  device: str = 'cuda',
@@ -30,11 +52,10 @@ class XL_LEXEME(ContextualizedEmbedding):
             start, end = int(start), int(end)
             examples.append(InputExample(texts=target_usage.context, positions=[start, end]))
 
-        return self._model.encode(examples, batch_size=batch_size, device=self._device)
+        raw_embeddings = self._model.encode(examples, batch_size=batch_size, device=self._device)
+        return ContextualizedEmbeddings.from_usages(target_usages, raw_embeddings)
 
-
-class BERT(ContextualizedEmbedding):
-
+class BERT(ContextualizedModel):
     def __init__(self, pretrained_model: str,
                  device: str = 'cuda',
                  n_extra_tokens: int = 2):
@@ -167,8 +188,9 @@ class BERT(ContextualizedEmbedding):
             batch_target_usages = target_usages[i: min(i + num_usages, batch_size)]
             target_embeddings.append(self.batch_encode(batch_target_usages))
 
-        return np.concat(target_embeddings, axis=0)
+        raw_embeddings = np.concat(target_embeddings, axis=0)
 
+        return ContextualizedEmbeddings.from_usages(target_usages, raw_embeddings)
 
 class RoBERTa(BERT):
     def __init__(self, pretrained_model: str,

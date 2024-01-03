@@ -12,11 +12,24 @@ class Target:
         return hash(self.target)
 
 class TargetUsage(Target):
-    def __init__(self, context: str, target: str, offsets: str):
+    def __init__(self, context: str, target: str, offsets: str, pos: str=None):
         super().__init__(target)
 
         self.context = context
         self.offsets = offsets
-
-    def set_pos(self, pos: str=None):
         self.pos = pos
+
+    @property
+    def token(self):
+        start, end = [int(i) for i in self.offsets.split(':')]
+        return self.context[start:end]
+
+    @property
+    def start(self):
+        start, end = [int(i) for i in self.offsets.split(':')]
+        return start
+
+    @property
+    def end(self):
+        start, end = [int(i) for i in self.offsets.split(':')]
+        return end
