@@ -10,6 +10,9 @@ class LanguageChange():
         self.cache_dir = user_cache_dir("languagechange", "Change is Key!")
         self.resources_dir = os.path.join(self.cache_dir, 'resources')
         self.models_dir = os.path.join(self.cache_dir, 'models')
+        self.local_dir = os.path.join(self.cache_dir, 'local')
+        self.local_resources_dir = os.path.join(self.local_dir, 'resources')
+        self.local_models_dir = os.path.join(self.local_dir, 'models')
         Path(self.resources_dir).mkdir(parents=True, exist_ok=True)
         Path(self.models_dir).mkdir(parents=True, exist_ok=True)
         self.load_resources_hub()
@@ -83,3 +86,8 @@ class LanguageChange():
         else:
             self.download(resource_type, resource_name, dataset, version)
             return path
+
+    def save_resource(self, resource_type, resource_name, dataset, version):
+        path = os.path.join(self.local_resources_dir,resource_type,resource_name,dataset,version)
+        Path(path).mkdir(parents=True, exist_ok=True)
+        return path
