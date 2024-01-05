@@ -18,13 +18,14 @@ class LanguageChange():
         self.load_resources_hub()
 
     def load_resources_hub(self):
-        #self.resource_hub = json.load()
         with open('resources_hub.json','r') as f:
             self.resource_hub = json.load(f)
 
     def download_ui(self):
         j = 0
         list_resources = []
+
+        print('Available resources:\n')
 
         for resource_type in self.resource_hub:
             print('########################')
