@@ -3,14 +3,12 @@ from corpora import LinebyLineCorpus
 from usages import Target, TargetUsageList, DWUGUsage
 import webbrowser
 import os
+import pickle
 
 
 class Benchmark():
 
     def __init__(self):
-        pass
-
-    def set_target_words(self):
         pass
 
 
@@ -50,7 +48,6 @@ class DWUG(Benchmark):
 
     def __init__(self, language, version):
         lc = LanguageChange()
-        lc.download_ui()
         self.language = language
         home_path = lc.get_resource('benchmarks', 'DWUG', self.language, version)
         dwug_folder = os.listdir(home_path)[0]
@@ -59,9 +56,49 @@ class DWUG(Benchmark):
 
     def load(self):
         self.target_words = os.listdir(os.path.join(self.home_path,'data'))
+        self.stats_groupings = {}
+        self.stats = {}
+
+        with open(os.path.join(self.home_path,'stats','opt','stats_groupings.csv')) as f:
+            keys = []
+            for j,line in enumerate(f):
+                line = line.replace('\n','').split('\t')
+                if j > 0:
+                    values = line
+                    D = {keys[j]:values[j] for j in range(1,len(values))}
+                    self.stats_groupings[values[0]] = D
+                else:
+                    keys = line
+
+        with open(os.path.join(self.home_path,'stats','opt','stats.csv')) as f:
+            keys = []
+            for j,line in enumerate(f):
+                line = line.replace('\n','').split('\t')
+                if j > 0:
+                    values = line
+                    D = {keys[j]:values[j] for j in range(1,len(values))}
+                    self.stats[values[0]] = D
+                else:
+                    keys = line
+
+        self.binary_task = {}
+        self.graded_task = {}
+        self.binary_gain_task = {}
+        self.bianry_loss_task = {}
+
+        for lemma in self.stats_groupings:
+
+            word = Target(lemma)
+            word.set_lemma(lemma)
+            self.binary_task[word] = int(self.stats_groupings[lemma]['change_binary'])
+            self.graded_task[word] = float(self.stats_groupings[lemma]['change_graded'])
+            self.binary_gain_task[word] = int(self.stats_groupings[lemma]['change_binary_gain'])
+            self.bianry_loss_task[word] = int(self.stats_groupings[lemma]['change_binary_loss'])
+
 
     def get_usage_graph(self, word):
-        pass
+        with open(os.path.join(self.home_path,'graphs','opt',word),'rb') as f:
+            return pickle.load(f)
 
     def show_usage_graph(self, word):
         def run_from_ipython():
@@ -116,7 +153,10 @@ class DWUG(Benchmark):
         return usages
 
     def get_stats(self):
-        pass
+        return self.stats
+
+    def get_stats_groupings(self):
+        return self.get_stats_groupings
 
 """
 benchmark = SemEval2020Task1('EN')
@@ -131,6 +171,5 @@ for target in benchmark.binary_task:
 
 
 dwug_en = DWUG('EN', '2.0.1')
-print(dwug_en.target_words)
 
-dwug_en.get_word_usages('attack_nn')
+dwug_en.get_usage_graph('attack_nn')
