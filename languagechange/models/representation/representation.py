@@ -2,6 +2,7 @@ import subprocess
 import numpy as np
 from abc import ABC, abstractmethod
 from typing import List, Union
+from languagechange.usages import TargetUsage
 from languagechange.corpora import LinebyLineCorpus
 
 
@@ -71,12 +72,11 @@ class StaticEmbedding(RepresentationModel, ABC):
 # todo
 class CountModel(RepresentationModel):
 
-    def __init__(self):
-        pass
+    def __init__(self, savepath):
+        self.savepath = savepath
+
+    def encode(self, corpus: LinebyLineCorpus):
+        subprocess.run(["python3", "-m", "LSCDetection.representations.count", corpus.path, self.savepath, self.window_size])
 
 
-    def encode(self):
-        pass
-
-
-c = CountModel()
+c = CountModel('')

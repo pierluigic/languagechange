@@ -17,6 +17,10 @@ try:
 except:
     reqs = [str(ir.requirement) for ir in install_reqs]
 
+reqs.append('LSCDetection @ git+ssh://git@github.com/pierluigic/LSCDetection.git')
+reqs.append('WordTransformer @ git+ssh://git@github.com/pierluigic/xl-lexeme.git')
+
+
 setuptools.setup(
     name="languagechange",
     version=__version__,

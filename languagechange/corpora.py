@@ -1,8 +1,8 @@
 import os
 import gzip
 import random
-from languagechange import LanguageChange
-from usages import TargetUsage, TargetUsageList
+from languagechange.resource_manager import LanguageChange
+from languagechange.usages import TargetUsage, TargetUsageList
 import re
 
 class Time:

@@ -1,4 +1,4 @@
-from languagechange import LanguageChange
+from languagechange.resource_manager import LanguageChange
 from corpora import LinebyLineCorpus
 from usages import Target, TargetUsageList, DWUGUsage
 import webbrowser
