@@ -17,6 +17,7 @@ try:
 except:
     reqs = [str(ir.requirement) for ir in install_reqs]
 
+reqs.append('dload')
 reqs.append('LSCDetection @ git+https://git@github.com/pierluigic/LSCDetection.git')
 reqs.append('WordTransformer @ git+https://git@github.com/pierluigic/xl-lexeme.git')
 
