@@ -1,6 +1,6 @@
 from languagechange.resource_manager import LanguageChange
-from corpora import LinebyLineCorpus
-from usages import Target, TargetUsageList, DWUGUsage
+from languagechange.corpora import LinebyLineCorpus
+from languagechange.usages import Target, TargetUsageList, DWUGUsage
 import webbrowser
 import os
 import pickle
