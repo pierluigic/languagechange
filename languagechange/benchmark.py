@@ -112,7 +112,9 @@ class DWUG(Benchmark):
             webbrowser.open(os.path.join(self.home_path,'plots','opt','weight','full',f'{word}.html'))
         else:
             from IPython.display import display, HTML
-            display(HTML('<h1>Hello, world!</h1>'))
+            with open(os.path.join(self.home_path,'plots','opt','weight','full',f'{word}.html')) as f:
+                html = f.read()
+                display(HTML(html))
 
     def get_word_usages(self, word):
         usages = TargetUsageList()
