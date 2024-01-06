@@ -1,5 +1,6 @@
 import json
 import os
+import urllib.request
 from pathlib import Path
 from platformdirs import user_cache_dir
 import dload
@@ -18,8 +19,8 @@ class LanguageChange():
         self.load_resources_hub()
 
     def load_resources_hub(self):
-        with open('resources_hub.json','r') as f:
-            self.resource_hub = json.load(f)
+        with urllib.request.urlopen('https://github.com/pierluigic/languagechange/blob/main/languagechange/resources_hub.json') as url:
+            self.resource_hub = json.load(url)
 
     def download_ui(self):
         j = 0
