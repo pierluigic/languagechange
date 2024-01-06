@@ -116,7 +116,8 @@ class DWUG(Benchmark):
                 html = f.read()
                 display(HTML(html))
 
-    def get_word_usages(self, word):
+    def get_word_usages(self, word, group='all'):
+        group = str(group)
         usages = TargetUsageList()
         with open(os.path.join(self.home_path,'data',word,'uses.csv')) as f:
             keys = []
@@ -125,12 +126,13 @@ class DWUG(Benchmark):
                 if j > 0:
                     values = line
                     D = {keys[j]:values[j] for j in range(len(values))}
-                    D['text'] = D['context']
-                    D['target'] = Target(D['lemma'])
-                    D['target'].set_lemma(D['lemma'])
-                    D['target'].set_pos(D['pos'])
-                    D['offsets'] = [int(i) for i in D['indexes_target_token'].split(':')]
-                    usages.append(DWUGUsage(**D))
+                    if D['group'] == group:
+                        D['text'] = D['context']
+                        D['target'] = Target(D['lemma'])
+                        D['target'].set_lemma(D['lemma'])
+                        D['target'].set_pos(D['pos'])
+                        D['offsets'] = [int(i) for i in D['indexes_target_token'].split(':')]
+                        usages.append(DWUGUsage(**D))
                 else:
                     keys = line
         return usages
