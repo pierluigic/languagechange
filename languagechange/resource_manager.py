@@ -19,7 +19,7 @@ class LanguageChange():
         self.load_resources_hub()
 
     def load_resources_hub(self):
-        with urllib.request.urlopen('https://github.com/pierluigic/languagechange/blob/main/languagechange/resources_hub.json') as url:
+        with urllib.request.urlopen('https://raw.githubusercontent.com/pierluigic/languagechange/main/languagechange/resources_hub.json') as url:
             self.resource_hub = json.load(url)
 
     def download_ui(self):
