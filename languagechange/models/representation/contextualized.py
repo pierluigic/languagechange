@@ -74,12 +74,12 @@ class XL_LEXEME(ContextualizedModel):
         examples = list()
 
         for target_usage in target_usages:
-            start, end = target_usage.offsets.split(':')
+            start, end = target_usage.offsets
             start, end = int(start), int(end)
             examples.append(InputExample(texts=target_usage.context, positions=[start, end]))
 
         raw_embeddings = self._model.encode(examples, batch_size=batch_size, device=self._device)
-        return ContextualizedEmbeddings.from_usages(target_usages, raw_embeddings)
+        return raw_embeddings
 
 class BERT(ContextualizedModel):
     def __init__(self, pretrained_model: str,
