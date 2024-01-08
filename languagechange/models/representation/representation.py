@@ -12,7 +12,7 @@ class RepresentationModel(ABC):
     def encode(self, *args, **kwargs):
         pass
 
-class ContextualizedEmbedding(RepresentationModel, ABC):
+class ContextualizedModel(RepresentationModel, ABC):
 
     @abstractmethod
     def __init__(self,
