@@ -3,9 +3,35 @@ import numpy as np
 from collections import defaultdict
 from typing import Tuple, List, Union, Any
 from languagechange.usages import TargetUsage
-from languagechange.models.representation import ContextualizedModel
 from transformers import AutoTokenizer, AutoModel
 from WordTransformer import WordTransformer, InputExample
+
+
+class ContextualizedModel():
+
+    @abstractmethod
+    def __init__(self,
+                 device: str = 'cuda',
+                 n_extra_tokens: int = 0,
+                 *args, **kwargs):
+
+        if not device in ['cuda', 'cpu']:
+            raise ValueError("Device must be in ['cuda', 'cpu']")
+        if not isinstance(n_extra_tokens, int):
+            raise ValueError("batch_size must be an integer")
+
+        self._n_extra_tokens = n_extra_tokens
+        self._device = device
+
+    @abstractmethod
+    def encode(self, target_usages: Union[TargetUsage, List[TargetUsage]],
+               batch_size: int = 8) -> np.array:
+
+        if not isinstance(batch_size, int):
+            raise ValueError("batch_size must be an integer")
+
+        if not (isinstance(target_usages, TargetUsage) or isinstance(target_usages, list)):
+            raise ValueError("target_usages must be Union[dict, List[dict]]")
 
 class ContextualizedEmbeddings():
     def __str__(self):
