@@ -60,7 +60,7 @@ class CountModel(StaticModel):
 
 class PPMI(StaticModel):
 
-    def __init__(self, count_model:CountModel, shifting_parameter:int, smoothing_parameter:int, savepath:str)):
+    def __init__(self, count_model:CountModel, shifting_parameter:int, smoothing_parameter:int, savepath:str):
         self.count_model = count_model
         self.shifting_parameter = shifting_parameter
         self.smoothing_parameter = smoothing_parameter
