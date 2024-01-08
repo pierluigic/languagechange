@@ -3,7 +3,7 @@ import numpy as np
 from collections import defaultdict
 from typing import Tuple, List, Union, Any
 from languagechange.usages import TargetUsage
-from languagechange.representation import ContextualizedModel
+from languagechange.models.representation import ContextualizedModel
 from transformers import AutoTokenizer, AutoModel
 from WordTransformer import WordTransformer, InputExample
 
