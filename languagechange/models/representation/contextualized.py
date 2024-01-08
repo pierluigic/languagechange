@@ -1,14 +1,13 @@
 import torch
-from datasets import Dataset
 import numpy as np
 from collections import defaultdict
 from typing import Tuple, List, Union, Any
 from languagechange.usages import TargetUsage
-from .representation import ContextualizedModel
+from languagechange.representation import ContextualizedModel
 from transformers import AutoTokenizer, AutoModel
 from WordTransformer import WordTransformer, InputExample
 
-class ContextualizedEmbeddings(Dataset):
+class ContextualizedEmbeddings():
     def __str__(self):
         return 'ContextualizedEmbeddings({\n    features: ' + f'{self.column_names}' + f',\n    num_rows: {self.num_rows}' + '\n})'
 
