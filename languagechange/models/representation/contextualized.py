@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from collections import defaultdict
+from abc import ABC, abstractmethod
 from typing import Tuple, List, Union, Any
 from languagechange.usages import TargetUsage
 from transformers import AutoTokenizer, AutoModel
