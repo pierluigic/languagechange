@@ -39,44 +39,53 @@ class ContextualizedEmbedding(RepresentationModel, ABC):
             raise ValueError("target_usages must be Union[dict, List[dict]]")
 
 # todo
-class StaticEmbedding(RepresentationModel, ABC):
+class StaticModel(RepresentationModel, ABC):
 
     @abstractmethod
     def encode(self):
-        subprocess.run(["python", "other.py"])
+        pass
 
-    def apply_weight_schema(self, strategy=None):
-        if strategy == None:
-            raise "You have to define a reduce strategy."
-        elif strategy == 'PPMI':
-            subprocess.run(["python", "other.py"])
-        else:
-            raise "Reduce strategy not available. Available reduce strategies are: PPMI."
 
-    def reduce(self, strategy=None):
-        if strategy == None:
-            raise "You have to define a reduce strategy."
-        elif strategy == 'SVD':
-            subprocess.run(["python", "other.py"])
-        else:
-            raise "Reduce strategy not available. Available reduce strategies are: SVD."
+class CountModel(StaticModel):
 
-    def align(self, strategy=None):
-        if strategy == None:
-            raise "You have to define a reduce strategy."
-        elif strategy == 'SVD':
-            subprocess.run(["python", "other.py"])
-        else:
-            raise "Reduce strategy not available. Available reduce strategies are: SVD."
-
-# todo
-class CountModel(RepresentationModel):
-
-    def __init__(self, savepath):
+    def __init__(self, corpus:LinebyLineCorpus, window_size:int, savepath:str):
+        self.corpus = corpus
+        self.window_size = window_size
         self.savepath = savepath
+        self.matrix_path = os.path.join(self.savepath)
+
+    def encode(self):
+        subprocess.run(["python3", "-m", "LSCDetection.representations.count", self.corpus.path, self.savepath, self.window_size])
+
+
+class PPMI(StaticModel):
+
+    def __init__(self, count_model:CountModel, shifting_parameter:int, smoothing_parameter:int, savepath:str)):
+        self.count_model = count_model
+        self.shifting_parameter = shifting_parameter
+        self.smoothing_parameter = smoothing_parameter
+        self.savepath = savepath
+        self.align_strategies = {'OP', 'SRV', 'WI'}
+        pass
+
+    def encode(self):
+        subprocess.run(["python3", "-m", "LSCDetection.representations.ppmi", self.count_model.matrix_path, self.shifting_parameter, self.smoothing_parameter])
+
+class SVD(StaticModel):
+
+    def __init__(self):
+        self.align_strategies = {'OP', 'SRV', 'WI'}
+        pass
 
     def encode(self, corpus: LinebyLineCorpus):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.count", corpus.path, self.savepath, self.window_size])
+        subprocess.run(["python3", "-m", "LSCDetection.representations.svd", corpus.path, self.savepath, self.window_size])
 
 
-c = CountModel('')
+class RandomIndexing(StaticModel):
+
+    def __init__(self):
+        self.align_strategies = {'OP', 'SRV', 'WI'}
+        pass
+
+    def encode(self, corpus: LinebyLineCorpus):
+        subprocess.run(["python3", "-m", "LSCDetection.representations.ri", corpus.path, self.savepath, self.window_size])

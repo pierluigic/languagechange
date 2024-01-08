@@ -126,7 +126,7 @@ class DWUG(Benchmark):
                 if j > 0:
                     values = line
                     D = {keys[j]:values[j] for j in range(len(values))}
-                    if D['group'] == group:
+                    if group == 'all' or D['grouping'] == group:
                         D['text'] = D['context']
                         D['target'] = Target(D['lemma'])
                         D['target'].set_lemma(D['lemma'])
