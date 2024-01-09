@@ -2,7 +2,7 @@ import os
 import gzip
 import random
 from languagechange.resource_manager import LanguageChange
-from languagechange.usages import TargetUsage, TargetUsageList
+from languagechange.usages import Target, TargetUsage, TargetUsageList
 import re
 
 class Time:
@@ -69,6 +69,10 @@ class Corpus:
 
 
     def search(self, words, strategy='REGEX', search_func=None):
+
+        for j,w in enumerate(words):
+            if type(w) == str:
+                words[j] = Target(w)
 
         if search_func == None:
             def search_func(word,line):
