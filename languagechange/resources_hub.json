@@ -2,16 +2,31 @@
   "benchmarks":{
     "SemEval 2020 Task 1":{
       "EN": {
-      	"semeval": "https://www2.ims.uni-stuttgart.de/data/sem-eval-ulscd/semeval2020_ulscd_eng.zip"
+      	"no-version": "https://www2.ims.uni-stuttgart.de/data/sem-eval-ulscd/semeval2020_ulscd_eng.zip"
       },
       "DE": {
-      	"semeval": "https://www2.ims.uni-stuttgart.de/data/sem-eval-ulscd/semeval2020_ulscd_ger.zip"
+      	"no-version": "https://www2.ims.uni-stuttgart.de/data/sem-eval-ulscd/semeval2020_ulscd_ger.zip"
       },
       "SV": {
-      	"semeval": "https://zenodo.org/record/3730550/files/semeval2020_ulscd_swe.zip"
+      	"no-version": "https://zenodo.org/record/3730550/files/semeval2020_ulscd_swe.zip"
       },
       "LA": {
-      	"semeval": "https://zenodo.org/record/3734089/files/semeval2020_ulscd_lat.zip"
+      	"no-version": "https://zenodo.org/record/3734089/files/semeval2020_ulscd_lat.zip"
+      }
+    },
+    "NorDiaChange":{
+      "NO":{
+        "no-version":"https://github.com/ltgoslo/nor_dia_change/archive/refs/heads/main.zip",
+      }
+    },
+    "RuShiftEval":{
+      "RU":{
+          "no-version": "https://github.com/akutuzov/rushifteval_public/archive/refs/heads/main.zip"
+      }
+    },
+    "DWUG Sense":{
+      "DE": {
+        "1.0.0":"https://zenodo.org/records/8197553/files/dwug_de_sense.zip",
       }
     },
     "DWUG":{
@@ -42,6 +57,9 @@
         "2.0.0 (discarded)":"https://zenodo.org/records/6433350/files/dwug_es.zip",
         "1.0.1 (development)":"https://zenodo.org/records/6433203/files/dwug_es.zip",
         "1.0.0 (development)":"https://zenodo.org/records/6300105/files/dwug_es.zip"
+      },
+      "ZH":{
+        "1.0.0": "https://zenodo.org/records/10023263/files/chiwug.zip"
       }
     }
   }
