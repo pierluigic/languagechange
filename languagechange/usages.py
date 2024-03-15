@@ -2,7 +2,7 @@ import enum
 import pickle
 from pathlib import Path
 import os
-from utils import Time
+from languagechange.utils import Time
 
 
 class POS(enum.Enum):

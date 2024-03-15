@@ -4,7 +4,7 @@ import random
 from languagechange.resource_manager import LanguageChange
 from languagechange.usages import Target, TargetUsage, TargetUsageList
 import re
-from utils import LiteralTime
+from languagechange.utils import LiteralTime
 from sortedcontainers import SortedKeyList
 
 class Line:
