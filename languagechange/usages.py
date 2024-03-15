@@ -33,15 +33,12 @@ class TargetUsage:
         self.offsets = offsets
         self.time = time
 
-    @property
     def start(self):
         return self.offsets[0]
 
-    @property
     def end(self):
         return self.offsets[1]
 
-    @property
     def time(self):
         return self.time
 
