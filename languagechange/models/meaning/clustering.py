@@ -4,45 +4,28 @@ from languagechange.models.meaning.meaning import WordSenseInduction
 from languagechange.models.representation.contextualized import ContextualizedEmbeddings
 
 
-class ClusteringAlgorithm:
-    def fit(self, x: np.array):
-        if not isinstance(x, np.ndarray):
-            raise ValueError('x must be np.array')
+class ClusteringResults():
+    def __init__(self, labels):
+        self.cluster2istances = {}
+        for j,l in enumerate(labels):
+            if not l in self.cluster2istances:
+                cluster2istances[l] = []
+            self.cluster2istances[l].append(j)
 
-        self.labels_ = None
+    def get_cluster_instances(self, cluster_id):
+        return self.cluster2istances[cluster_id]
 
-class Clustering(WordSenseInduction):
-    def __init__(self, algorithm: ClusteringAlgorithm):
+
+class Clustering():
+    def __init__(self, algorithm):
         super().__init__()
         self.algorithm = algorithm
 
-    def labels(self, embs1: ContextualizedEmbeddings,
-               embs2: ContextualizedEmbeddings) -> Tuple[ContextualizedEmbeddings,
-                                                     ContextualizedEmbeddings]:
-        labels = self.algorithm.labels_
+    def get_cluster_results(self, embeddings:np.array):
+        self.labels = self.algorithm.fit_predict(embeddings)
+        return ClusteringResults(self.labels)
 
-        # noinspection PyUnresolvedReferences
-        lab1 = labels[:embs1['embedding'].shape[0]]
-        if 'cluster' in embs1.column_names:
-            embs1 = embs1.remove_columns(['cluster'])
-        embs1 = embs1.add_column("cluster", lab1)
-
-        lab2 = labels[embs1['embedding'].shape[0]:]
-        if 'cluster' in embs2.column_names:
-            embs2 = embs2.remove_columns(['cluster'])
-        embs2 = embs2.add_column("cluster", lab2)
-
-        return embs1, embs2
-
-    def fit(self, embs1: ContextualizedEmbeddings,
-            embs2: ContextualizedEmbeddings) -> Tuple[ContextualizedEmbeddings,
-                                                     ContextualizedEmbeddings]:
-        # clustering embeddings as a whole
-        embeddings = np.concatenate([embs1['embedding'], embs2['embedding']], axis=0)
-
-        self.algorithm.fit(embeddings)
-
-        return self.labels(embs1, embs2)
+        
 
 class IncrementalClustering(Clustering):
     def fit(self, embs1: ContextualizedEmbeddings,

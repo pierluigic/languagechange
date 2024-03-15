@@ -16,7 +16,7 @@
     },
     "NorDiaChange":{
       "NO":{
-        "no-version":"https://github.com/ltgoslo/nor_dia_change/archive/refs/heads/main.zip",
+        "no-version":"https://github.com/ltgoslo/nor_dia_change/archive/refs/heads/main.zip"
       }
     },
     "RuShiftEval":{
@@ -26,7 +26,7 @@
     },
     "DWUG Sense":{
       "DE": {
-        "1.0.0":"https://zenodo.org/records/8197553/files/dwug_de_sense.zip",
+        "1.0.0":"https://zenodo.org/records/8197553/files/dwug_de_sense.zip"
       }
     },
     "DWUG":{

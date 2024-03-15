@@ -2,6 +2,7 @@ import enum
 import pickle
 from pathlib import Path
 import os
+from utils import Time
 
 
 class POS(enum.Enum):
@@ -27,9 +28,10 @@ class Target:
         return hash(self.target)
 
 class TargetUsage:
-    def __init__(self, text: str, offsets: str, **args):
+    def __init__(self, text: str, offsets: str, time: Time, **args):
         self.text = text
         self.offsets = offsets
+        self.time = time
 
     @property
     def start(self):
@@ -38,6 +40,10 @@ class TargetUsage:
     @property
     def end(self):
         return self.offsets[1]
+
+    @property
+    def time(self):
+        return self.time
 
     def __getitem__(self,item):
         return self.text[item]
@@ -66,3 +72,6 @@ class TargetUsageList(list):
     def load(path, target):
         with open(os.path.join(path,target),'rb') as f:
             return pickle.load(f)
+
+    def time_axis(self):
+        return [usage.time for usage in self]

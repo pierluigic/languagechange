@@ -1,6 +1,7 @@
 from languagechange.resource_manager import LanguageChange
 from languagechange.corpora import LinebyLineCorpus
 from languagechange.usages import Target, TargetUsageList, DWUGUsage
+from utils import NumericalTime, LiteralTime
 import webbrowser
 import os
 import pickle
@@ -24,10 +25,10 @@ class SemEval2020Task1(Benchmark):
 
 
     def load(self):
-        self.corpus1_lemma = LinebyLineCorpus(os.path.join(self.home_path, 'corpus1', 'lemma'), name='corpus1_lemma', language=self.language, is_lemmatized=True)
-        self.corpus2_lemma = LinebyLineCorpus(os.path.join(self.home_path, 'corpus2', 'lemma'), name='corpus2_lemma', language=self.language, is_lemmatized=True)
-        self.corpus1_token = LinebyLineCorpus(os.path.join(self.home_path, 'corpus1', 'token'), name='corpus1_token', language=self.language, is_tokenized=True)
-        self.corpus2_token = LinebyLineCorpus(os.path.join(self.home_path, 'corpus2', 'token'), name='corpus2_token', language=self.language, is_tokenized=True)
+        self.corpus1_lemma = LinebyLineCorpus(os.path.join(self.home_path, 'corpus1', 'lemma'), name='corpus1_lemma', language=self.language, time=NumericalTime(1), is_lemmatized=True)
+        self.corpus2_lemma = LinebyLineCorpus(os.path.join(self.home_path, 'corpus2', 'lemma'), name='corpus2_lemma', language=self.language, time=NumericalTime(2), is_lemmatized=True)
+        self.corpus1_token = LinebyLineCorpus(os.path.join(self.home_path, 'corpus1', 'token'), name='corpus1_token', language=self.language, time=NumericalTime(1), is_tokenized=True)
+        self.corpus2_token = LinebyLineCorpus(os.path.join(self.home_path, 'corpus2', 'token'), name='corpus2_token', language=self.language, time=NumericalTime(2), is_tokenized=True)
         self.binary_task = {}
         self.graded_task = {}
 
@@ -132,6 +133,7 @@ class DWUG(Benchmark):
                         D['target'].set_lemma(D['lemma'])
                         D['target'].set_pos(D['pos'])
                         D['offsets'] = [int(i) for i in D['indexes_target_token'].split(':')]
+                        D['time'] = LiteralTime(D['date'])
                         usages.append(DWUGUsage(**D))
                 else:
                     keys = line
@@ -151,6 +153,7 @@ class DWUG(Benchmark):
                     D['target'].set_lemma(D['lemma'])
                     D['target'].set_pos(D['pos'])
                     D['offsets'] = [int(i) for i in D['indexes_target_token'].split(':')]
+                    D['time'] = LiteralTime(D['date'])
                     usages.append(DWUGUsage(**D))
                 else:
                     keys = line
@@ -161,19 +164,4 @@ class DWUG(Benchmark):
 
     def get_stats_groupings(self):
         return self.get_stats_groupings
-
-"""
-benchmark = SemEval2020Task1('EN')
-objects = benchmark.corpus1_lemma.search([Target('attack_nn')], strategy='REGEX')
-objects['attack_nn'].save('usages','attack_nn')
-
-usages_attack = TargetUsageList.load('usages','attack_nn')
-
-for target in benchmark.binary_task:
-    print(target, benchmark.binary_task[target])
-"""
-
-
-dwug_en = DWUG('EN', '2.0.1')
-
-dwug_en.get_usage_graph('attack_nn')
+        

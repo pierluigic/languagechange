@@ -3,31 +3,9 @@ import gzip
 import random
 from languagechange.resource_manager import LanguageChange
 from languagechange.usages import Target, TargetUsage, TargetUsageList
-from numbers import Number
 import re
-
-class Time:
-    def __init__(self):
-        pass
-
-class LiteralTime(Time):
-    def __init__(self, point: str):
-        self.point
-
-class NumericalTime(Time):
-    def __init__(self, point: Number):
-        self.point 
-
-class TimeInterval(Time):
-    def __init__(self, start: Time, end:Time):
-        self.start = start
-        self.end = end
-        if type(self.start).__name__ == type(self.end).__name__:
-            if type(self.start) == NumericalTime:
-                self.duration = self.end - self.start
-        else:
-            raise Exception('start and end points have to be of the same type')
-
+from utils import LiteralTime
+from sortedcontainers import SortedKeyList
 
 class Line:
 
@@ -64,9 +42,10 @@ class Line:
 
 class Corpus:
 
-    def __init__(self, name, language=None, **args):
+    def __init__(self, name, language=None, time=LiteralTime('no time specification'), **args):
         self.name = name
         self.language = language
+        self.time = time
 
 
     def set_sentences_iterator(self, sentences):
@@ -303,12 +282,8 @@ class VerticalCorpus(Corpus):
 
 
 
-class HistoricalCorpus:
+class HistoricalCorpus(SortedKeyList):
 
-    def __init__(self, corpora:list[Corpus], time_points=list[Time]):
-        self.corpora = corpora
-        self.time_points = time_points
+    def __init__(self, corpora:list[Corpus]):
+        super().__init__(corpora, key= lambda x: x.time)
 
-    def corpus_iterator(self):
-        for corpus in self.corpora:
-            yield corpus

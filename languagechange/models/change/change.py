@@ -1,4 +1,5 @@
 from scipy.spatial.distance import cdist, cosine
+from clustering import Clustering
 import numpy as np
 
 class ChangeModel():
@@ -87,14 +88,25 @@ class PJSD(GradedChange):
     def __init__(self):
         pass
 
-    def compute_scores(embeddings1, embeddings2, metric='cosine'):
-        pass
+    def compute_scores(embeddings1, embeddings2, clustering_algorithm, metric='cosine'):
+        clustering = Clustering(clustering_algorithm)
+        clustering.get_results(np.concatenate((embeddings1,embeddings2),axis=0))
+        labels1 = clustering.labels[:len(embeddings1)]
+        labels2 = clustering.labels[len(embeddings1):]
+        labels = set(clustering.labels)
+        count1 = Counter(labels1)
+        count2 = Counter(labels2)
+        p,q = [], []
+        for l in labels:
+            if l in count1:
+                p.append(count1[l]/len(embeddings1))
+            else:
+                p.append(0.)
+            if l in count2:
+                q.append(count2[l]/len(embeddings2))
+            else:
+                q.append(0.)
+
+        return jensenshannon(p, q)
 
 
-class WIDID(GradedChange):
-
-    def __init__(self):
-        pass
-
-    def compute_scores(embeddings1, embeddings2, metric='cosine'):
-        pass
