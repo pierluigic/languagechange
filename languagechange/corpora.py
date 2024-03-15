@@ -3,6 +3,7 @@ import gzip
 import random
 from languagechange.resource_manager import LanguageChange
 from languagechange.usages import Target, TargetUsage, TargetUsageList
+from numbers import Number
 import re
 
 class Time:
@@ -10,18 +11,22 @@ class Time:
         pass
 
 class LiteralTime(Time):
-    def __init__(self):
-        pass
+    def __init__(self, point: str):
+        self.point
 
 class NumericalTime(Time):
-    def __init__(self):
-        pass
+    def __init__(self, point: Number):
+        self.point 
 
 class TimeInterval(Time):
-    def __init__(self, start: NumericalTime, end:NumericalTime):
-        self.start
-        self.end
-
+    def __init__(self, start: Time, end:Time):
+        self.start = start
+        self.end = end
+        if type(self.start).__name__ == type(self.end).__name__:
+            if type(self.start) == NumericalTime:
+                self.duration = self.end - self.start
+        else:
+            raise Exception('start and end points have to be of the same type')
 
 
 class Line:
@@ -242,11 +247,12 @@ class LinebyLineCorpus(Corpus):
 
 class VerticalCorpus(Corpus):
 
-    def __init__(self, path, sentence_separator='\n', field_separator='\t', **args):
+    def __init__(self, path, sentence_separator='\n', field_separator='\t', field_map={'token':0, 'lemma':1, 'pos_tag':2}, **args):
         self.super(**args)
         self.path = path
         self.sentence_separator = sentence_separator
         self.field_separator = field_separator
+        self.field_map = field_map
 
 
     def line_iterator(self):
@@ -257,28 +263,40 @@ class VerticalCorpus(Corpus):
             fnames = [self.path]
 
         def get_data(line):
-            line = line.replace('\n','')
             data = {}
-            data['raw_text'] = line
-            if self.is_lemmatized:
-                data['lemmas'] = line.split(self.tokens_splitter)
-            elif self.is_tokenized:
-                data['tokens'] = line.split(self.tokens_splitter)
+            splitted_line = [vertical_line.split(self.field_separator) for vertical_line in line]
+            raw_text = [vertical_line[self.field_map['token']] for vertical_line in splitted_line]
+            data['raw_text'] = ' '.join(raw_text)
+            data['tokens'] = raw_text
+            if 'lemma' in self.field_map:
+                lemma_text = [vertical_line[self.field_map['lemma']] for vertical_line in splitted_line]
+                data['lemmas'] = lemma_text
+            if 'pos_tag' in self.field_map:
+                pos_text = [vertical_line[self.field_map['pos']] for vertical_line in splitted_line]     
             return data
 
         for fname in fnames:
 
             if fname.endswith('.txt'):
                 with open(fname,'r') as f:
-                    for line in f:
-                        data = get_data(line)
-                        yield Line(fname=fname, **data)
+                    line = []
+                    for vertical_line in f:
+                        if vertical_line == self.sentence_separator:
+                            data = get_data(line)
+                            yield Line(fname=fname, **data)
+                            line = []
+                        else:
+                            line.append(vertical_line)
 
             elif fname.endswith('.gz'):
                 with gzip.open(fname, mode="rt") as f:
-                    for line in f:
-                        data = get_data(line)
-                        yield Line(fname=fname, **data)
+                    for vertical_line in f:
+                        if vertical_line == self.sentence_separator:
+                            data = get_data(line)
+                            yield Line(fname=fname, **data)
+                            line = []
+                        else:
+                            line.append(vertical_line)
 
             else:
                 raise Exception('Format not recognized')
@@ -290,11 +308,6 @@ class HistoricalCorpus:
     def __init__(self, corpora:list[Corpus], time_points=list[Time]):
         self.corpora = corpora
         self.time_points = time_points
-
-
-    def sort(self):
-        pass
-
 
     def corpus_iterator(self):
         for corpus in self.corpora:
