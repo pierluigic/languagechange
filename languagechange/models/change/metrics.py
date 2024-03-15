@@ -1,5 +1,5 @@
 from scipy.spatial.distance import cdist, cosine
-from clustering import Clustering
+from languagechange.models.meaning.clustering import Clustering
 import numpy as np
 
 class ChangeModel():

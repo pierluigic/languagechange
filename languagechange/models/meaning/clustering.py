@@ -1,6 +1,5 @@
 import numpy as np
 from typing import Tuple
-from languagechange.models.meaning.meaning import WordSenseInduction
 from languagechange.models.representation.contextualized import ContextualizedEmbeddings
 
 
@@ -25,7 +24,7 @@ class Clustering():
         self.labels = self.algorithm.fit_predict(embeddings)
         return ClusteringResults(self.labels)
 
-        
+
 
 class IncrementalClustering(Clustering):
     def fit(self, embs1: ContextualizedEmbeddings,
