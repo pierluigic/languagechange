@@ -1,7 +1,7 @@
 from languagechange.resource_manager import LanguageChange
 from languagechange.corpora import LinebyLineCorpus
 from languagechange.usages import Target, TargetUsageList, DWUGUsage
-from utils import NumericalTime, LiteralTime
+from languagechange.utils import NumericalTime, LiteralTime
 import webbrowser
 import os
 import pickle
