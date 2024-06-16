@@ -90,7 +90,7 @@ class PJSD(GradedChange):
 
     def compute_scores(self, embeddings1, embeddings2, clustering_algorithm, metric='cosine'):
         clustering = Clustering(clustering_algorithm)
-        clustering.get_results(np.concatenate((embeddings1,embeddings2),axis=0))
+        clustering.get_cluster_results(np.concatenate((embeddings1,embeddings2),axis=0))
         labels1 = clustering.labels[:len(embeddings1)]
         labels2 = clustering.labels[len(embeddings1):]
         labels = set(clustering.labels)
