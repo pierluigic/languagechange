@@ -8,7 +8,7 @@ class ClusteringResults():
         self.cluster2instances = {}
         for j,l in enumerate(labels):
             if not l in self.cluster2instances:
-                cluster2istances[l] = []
+                self.cluster2instances[l] = []
             self.cluster2instances[l].append(j)
 
     def get_cluster_instances(self, cluster_id):
