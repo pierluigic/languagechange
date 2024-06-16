@@ -68,7 +68,7 @@ class APD(GradedChange):
     def __init__(self):
         pass
 
-    def compute_scores(embeddings1, embeddings2, metric='cosine'):
+    def compute_scores(self, embeddings1, embeddings2, metric='cosine'):
 
         return np.mean(cdist(embeddings1, embeddings2, metric=metric))
 
@@ -78,7 +78,7 @@ class PRT(GradedChange):
     def __init__(self):
         pass
 
-    def compute_scores(embeddings1, embeddings2, metric='cosine'):
+    def compute_scores(self, embeddings1, embeddings2, metric='cosine'):
 
         return cosine(embeddings1.mean(axis=0), embeddings2.mean(axis=0))
 
@@ -88,7 +88,7 @@ class PJSD(GradedChange):
     def __init__(self):
         pass
 
-    def compute_scores(embeddings1, embeddings2, clustering_algorithm, metric='cosine'):
+    def compute_scores(self, embeddings1, embeddings2, clustering_algorithm, metric='cosine'):
         clustering = Clustering(clustering_algorithm)
         clustering.get_results(np.concatenate((embeddings1,embeddings2),axis=0))
         labels1 = clustering.labels[:len(embeddings1)]
