@@ -2,6 +2,7 @@ from scipy.spatial.distance import cdist, cosine
 from languagechange.models.meaning.clustering import Clustering
 import numpy as np
 from collections import Counter
+from scipy.spatial.distance import jensenshannon
 
 class ChangeModel():
 
