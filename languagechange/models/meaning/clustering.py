@@ -5,14 +5,14 @@ from languagechange.models.representation.contextualized import ContextualizedEm
 
 class ClusteringResults():
     def __init__(self, labels):
-        self.cluster2istances = {}
+        self.cluster2instances = {}
         for j,l in enumerate(labels):
-            if not l in self.cluster2istances:
+            if not l in self.cluster2instances:
                 cluster2istances[l] = []
-            self.cluster2istances[l].append(j)
+            self.cluster2instances[l].append(j)
 
     def get_cluster_instances(self, cluster_id):
-        return self.cluster2istances[cluster_id]
+        return self.cluster2instances[cluster_id]
 
 
 class Clustering():
