@@ -1,6 +1,7 @@
 from scipy.spatial.distance import cdist, cosine
 from languagechange.models.meaning.clustering import Clustering
 import numpy as np
+from collections import Counter
 
 class ChangeModel():
 
