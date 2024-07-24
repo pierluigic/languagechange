@@ -18,7 +18,7 @@ class SemEval2020Task1(Benchmark):
     def __init__(self, language):
         lc = LanguageChange()
         self.language = language
-        home_path = lc.get_resource('benchmarks', 'SemEval 2020 Task 1', self.language, 'semeval')
+        home_path = lc.get_resource('benchmarks', 'SemEval 2020 Task 1', self.language, 'no-version')
         semeval_folder = os.listdir(home_path)[0]
         self.home_path = os.path.join(home_path,semeval_folder)
         self.load()
