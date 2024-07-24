@@ -6,6 +6,7 @@ from languagechange.usages import TargetUsage
 from languagechange.corpora import LinebyLineCorpus
 from LSCDetection.modules.utils_ import Space
 import os
+env = os.environ.copy()
 
 class RepresentationModel(ABC):
 
@@ -56,7 +57,7 @@ class CountModel(StaticModel):
         self.matrix_path = os.path.join(self.savepath)
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.count", self.corpus.path, self.savepath, str(self.window_size)])
+        subprocess.run(["python3", "-m", "LSCDetection.representations.count", self.corpus.path, self.savepath, str(self.window_size)], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
 
 
 class PPMI(CountModel):
@@ -71,7 +72,7 @@ class PPMI(CountModel):
         self.align_strategies = {'OP', 'SRV', 'WI'}
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.ppmi", self.count_model.matrix_path, self.savepath, str(self.shifting_parameter), str(self.smoothing_parameter)])
+        subprocess.run(["python3", "-m", "LSCDetection.representations.ppmi", self.count_model.matrix_path, self.savepath, str(self.shifting_parameter), str(self.smoothing_parameter)], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
 
 class SVD(StaticModel):
 
@@ -86,7 +87,7 @@ class SVD(StaticModel):
         self.align_strategies = {'OP', 'SRV', 'WI'}
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.svd", self.count_model.matrix_path, self.savepath, str(self.dimensionality), str(self.gamma)])
+        subprocess.run(["python3", "-m", "LSCDetection.representations.svd", self.count_model.matrix_path, self.savepath, str(self.dimensionality), str(self.gamma)], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
 
 
 class RandomIndexing(StaticModel):
@@ -97,6 +98,6 @@ class RandomIndexing(StaticModel):
         pass
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.ri", corpus.path, self.savepath, self.window_size])
+        subprocess.run(["python3", "-m", "LSCDetection.representations.ri", corpus.path, self.savepath, self.window_size], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
 
 

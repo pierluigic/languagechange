@@ -169,6 +169,8 @@ class Corpus:
 class LinebyLineCorpus(Corpus):
 
     def __init__(self, path, **args):
+        if not 'name' in args:
+            args.name = path
         super().__init__(**args)
         self.path = path
 
@@ -188,7 +190,7 @@ class LinebyLineCorpus(Corpus):
                 self.is_sentence_tokenized = False
                 self.is_tokenized = False
 
-        if self.is_tokenized:
+        if 'is_tokenized' in args and args['is_tokenized']:
             if 'is_lemmatized' in args:
                 self.is_lemmatized = args['is_lemmatized']
             if 'tokens_splitter' in args:
