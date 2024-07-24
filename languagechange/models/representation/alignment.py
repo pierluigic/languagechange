@@ -7,7 +7,6 @@ from languagechange.corpora import LinebyLineCorpus
 from LSCDetection.modules.utils_ import Space
 from languagechange.models.representation.static import StaticModel
 import os
-env = os.environ.copy()
 
 
 class OrthogonalProcrustes():
@@ -24,4 +23,4 @@ class OrthogonalProcrustes():
             model1.matrix_path,
             model2.matrix_path,
             self.savepath1,
-            self.savepath2],shell=True, env=env, stderr=subprocess.PIPE, stdout=subprocess.PIPE,)
+            self.savepath2])

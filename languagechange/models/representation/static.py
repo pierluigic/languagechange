@@ -57,7 +57,7 @@ class CountModel(StaticModel):
         self.matrix_path = os.path.join(self.savepath)
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.count", self.corpus.path, self.savepath, str(self.window_size)], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
+        subprocess.run(["python3", "-m", "LSCDetection.representations.count", self.corpus.path, self.savepath, str(self.window_size)])
 
 
 class PPMI(CountModel):
@@ -72,7 +72,7 @@ class PPMI(CountModel):
         self.align_strategies = {'OP', 'SRV', 'WI'}
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.ppmi", self.count_model.matrix_path, self.savepath, str(self.shifting_parameter), str(self.smoothing_parameter)], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
+        subprocess.run(["python3", "-m", "LSCDetection.representations.ppmi", self.count_model.matrix_path, self.savepath, str(self.shifting_parameter), str(self.smoothing_parameter)])
 
 class SVD(StaticModel):
 
@@ -87,7 +87,7 @@ class SVD(StaticModel):
         self.align_strategies = {'OP', 'SRV', 'WI'}
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.svd", self.count_model.matrix_path, self.savepath, str(self.dimensionality), str(self.gamma)], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
+        subprocess.run(["python3", "-m", "LSCDetection.representations.svd", self.count_model.matrix_path, self.savepath, str(self.dimensionality), str(self.gamma)])
 
 
 class RandomIndexing(StaticModel):
@@ -98,6 +98,6 @@ class RandomIndexing(StaticModel):
         pass
 
     def encode(self):
-        subprocess.run(["python3", "-m", "LSCDetection.representations.ri", corpus.path, self.savepath, self.window_size], stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=env)
+        subprocess.run(["python3", "-m", "LSCDetection.representations.ri", corpus.path, self.savepath, self.window_size])
 
 
