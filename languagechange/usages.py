@@ -28,10 +28,13 @@ class Target:
         return hash(self.target)
 
 class TargetUsage:
-    def __init__(self, text: str, offsets: str, time: Time, **args):
-        self.text = text
+    def __init__(self, text: str, offsets: str, time: Time = None, **args):
+        self.text_ = text
         self.offsets = offsets
         self.time = time
+
+    def text(self):
+        return self.text_
 
     def start(self):
         return self.offsets[0]
@@ -43,10 +46,10 @@ class TargetUsage:
         return self.time
 
     def __getitem__(self,item):
-        return self.text[item]
+        return self.text_[item]
 
     def __str__(self):
-        return self.text
+        return self.text_
 
 class DWUGUsage(TargetUsage):
 

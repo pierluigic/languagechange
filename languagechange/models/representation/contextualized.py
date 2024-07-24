@@ -4,9 +4,11 @@ from collections import defaultdict
 from abc import ABC, abstractmethod
 from typing import Tuple, List, Union, Any
 from languagechange.usages import TargetUsage
+import transformers
 from transformers import AutoTokenizer, AutoModel
 from WordTransformer import WordTransformer, InputExample
 
+transformers.logging.set_verbosity_error()
 
 class ContextualizedModel():
 
@@ -91,15 +93,12 @@ class BERT(ContextualizedModel):
         self._model = AutoModel.from_pretrained(pretrained_model)
         self._token_type_ids = True
 
-    def split_context(self, target_usage: TargetUsage) -> Tuple[List[str],
-                                                                List[str],
-                                                                List[str]]:
-        start, end = target_usage.offsets.split(':')
-        start, end = int(start), int(end)
+    def split_context(self, target_usage: TargetUsage) -> Tuple[List[str], List[str], List[str]]:
+        start, end = target_usage.start(), target_usage.end()
 
-        right_context = target_usage.context[:start]
-        token_occurrence = target_usage.context[start:end]
-        left_context = target_usage.context[end:]
+        right_context = target_usage.text()[:start]
+        token_occurrence = target_usage.text()[start:end]
+        left_context = target_usage.text()[end:]
 
         left_tokens = self._tokenizer.tokenize(right_context, return_tensors='pt')
         target_tokens = self._tokenizer.tokenize(token_occurrence, return_tensors='pt')
@@ -107,14 +106,9 @@ class BERT(ContextualizedModel):
 
         return left_tokens, target_tokens, right_tokens
 
-    def center_usage(self,
-                     left_tokens: List[str],
-                     target_tokens: List[str],
-                     right_tokens: List[str]) -> Tuple[List[str],
-                                                       List[str],
-                                                       List[str]]:
+    def center_usage(self, left_tokens: List[str], target_tokens: List[str], right_tokens: List[str]) -> Tuple[List[str], List[str], List[str]]:
 
-        max_seq_len = self._tokenizer.model_max_length - self._n_extra_tokens
+        max_seq_len = self._tokenizer.model_max_length
 
         overflow_left = len(left_tokens) - int((max_seq_len - len(target_tokens)) / 2)
         overflow_right = len(right_tokens) - int((max_seq_len - len(target_tokens)) / 2)
@@ -131,18 +125,12 @@ class BERT(ContextualizedModel):
 
         return left_tokens, target_tokens, right_tokens
 
-    def add_special_tokens(self, left_tokens: List[str],
-                           target_tokens: List[str],  # for additional extensions
-                           right_tokens: List[str]) -> Tuple[List[str],
-                                                             List[str],
-                                                             List[str]]:
-
+    def add_special_tokens(self, left_tokens: List[str], target_tokens: List[str], right_tokens: List[str]) -> Tuple[List[str], List[str], List[str]]:
         left_tokens = [self._tokenizer.cls_token] + left_tokens
         right_tokens = right_tokens + [self._tokenizer.sep_token]
         return left_tokens, target_tokens, right_tokens
 
-    def process_input_tokens(self,
-                             tokens: List[str]) -> dict[str, Union[list[int], Any]]:
+    def process_input_tokens(self, tokens: List[str]) -> dict[str, Union[list[int], Any]]:
         max_seq_len = self._tokenizer.model_max_length
 
         input_ids_ = self._tokenizer.convert_tokens_to_ids(tokens)
@@ -169,12 +157,7 @@ class BERT(ContextualizedModel):
 
         for target_usage in target_usages:
             left_tokens, target_tokens, right_tokens = self.split_context(target_usage)
-            left_tokens, target_tokens, right_tokens = self.center_usage(left_tokens,
-                                                                         target_tokens,
-                                                                         right_tokens)
-            left_tokens, target_tokens, right_tokens = self.add_special_tokens(left_tokens,
-                                                                               target_tokens,
-                                                                               right_tokens)
+            left_tokens, target_tokens, right_tokens = self.center_usage(left_tokens, target_tokens, right_tokens)
 
             # start and end in terms of tokens
             start, end = len(left_tokens), len(left_tokens) + len(target_tokens)
@@ -200,23 +183,21 @@ class BERT(ContextualizedModel):
 
         return np.array(target_embeddings)
 
-    def encode(self, target_usages: Union[TargetUsage, List[TargetUsage]],
-               batch_size: int = 8) -> np.array:
+    def encode(self, target_usages: Union[TargetUsage, List[TargetUsage]], batch_size: int = 8) -> np.array:
         super(BERT, self).encode(target_usages=target_usages, batch_size=batch_size)
-
-        if isinstance(target_usages, TargetUsage):
-            target_usages = [target_usages]
 
         target_embeddings = list()
 
         num_usages = len(target_usages)
         for i in range(0, num_usages, batch_size):
-            batch_target_usages = target_usages[i: min(i + num_usages, batch_size)]
-            target_embeddings.append(self.batch_encode(batch_target_usages))
+            batch_target_usages = target_usages[i: min(i + batch_size, num_usages)]
+            if len(batch_target_usages) > 0:
+                target_embeddings.append(self.batch_encode(batch_target_usages))
 
-        raw_embeddings = np.concat(target_embeddings, axis=0)
+        raw_embeddings = np.concatenate(target_embeddings, axis=0)
 
-        return ContextualizedEmbeddings.from_usages(target_usages, raw_embeddings)
+        return raw_embeddings
+
 
 class RoBERTa(BERT):
     def __init__(self, pretrained_model: str,

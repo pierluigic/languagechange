@@ -6,6 +6,10 @@ from languagechange.usages import Target, TargetUsage, TargetUsageList
 import re
 from languagechange.utils import LiteralTime
 from sortedcontainers import SortedKeyList
+import logging
+
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+
 
 class Line:
 
@@ -38,6 +42,9 @@ class Line:
                 return ' '.join(self._lemmas)
             else:
                 raise Exception('No valid data in Line')
+
+    def __str__(self):
+        return self._raw_text
 
 
 class Corpus:
@@ -74,10 +81,16 @@ class Corpus:
             for word in words:
                 usage_dictionary[word.target] = TargetUsageList()
 
+            logging.info("Scanning the corpus..")
+            n_usages = 0
+
             for line in self.line_iterator():
                 for word in words:
                     for offsets in search_func(word.target, line.raw_text()):
-                        usage_dictionary[word.target].append(TargetUsage(line.raw_text(), offsets))
+                        usage_dictionary[word.target].append(TargetUsage(line.raw_text(), offsets, self.time))
+                        n_usages = n_usages + 1
+
+            logging.info(f"{n_usages} usages found.")
         else:
 
             if type(strategy) == str:
@@ -88,6 +101,9 @@ class Corpus:
             for word in words:
                 word_form = word.target if 'INFLECTED' in strategy else word.lemma
                 usage_dictionary[word_form] = TargetUsageList()
+
+            logging.info("Scanning the corpus..")
+            n_usages = 0
 
             for line in self.line_iterator():
                 line_tokens = line.tokens() if 'INFLECTED' in strategy else line.lemmas()
@@ -102,7 +118,10 @@ class Corpus:
                                 if not j == 0:
                                     offsets[0] = len(' '.join(line.tokens()[:j])) + 1
                                 offsets[1] = offsets[0] + len(line.tokens()[j])
-                                usage_dictionary[word_form].append(TargetUsage(' '.join(line.tokens()), offsets))
+                                usage_dictionary[word_form].append(TargetUsage(' '.join(line.tokens()), offsets, self.time))
+                                n_usages = n_usages + 1
+
+            logging.info(f"{n_usages} usages found.")
         return usage_dictionary
 
 

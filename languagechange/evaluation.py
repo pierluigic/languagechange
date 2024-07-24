@@ -7,7 +7,10 @@ class Evaluation():
         pass
 
 
-    def evaluate(self, dataset=None, meaning_model=None, change_model=None, metrics=[]):
+    def evaluate_binary():
+        pass
+
+    def evaluate_graded():
         pass
 
 
@@ -18,4 +21,11 @@ class Evaluation():
         pass
 
     def print_console(self, input_result, output_source):
+        pass
+
+
+
+class DWUGEvaluation(Evaluation):
+
+    def __init__(self):
         pass
