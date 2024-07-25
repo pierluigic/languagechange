@@ -90,7 +90,8 @@ class BERT(ContextualizedModel):
         super().__init__(device=device, n_extra_tokens=n_extra_tokens)
 
         self._tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
-        self._model = AutoModel.from_pretrained(pretrained_model, device=device)
+        self._model = AutoModel.from_pretrained(pretrained_model)
+        self._model.to(device)
         self._token_type_ids = True
 
     def split_context(self, target_usage: TargetUsage) -> Tuple[List[str], List[str], List[str]]:
