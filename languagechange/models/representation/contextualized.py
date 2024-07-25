@@ -90,7 +90,7 @@ class BERT(ContextualizedModel):
         super().__init__(device=device, n_extra_tokens=n_extra_tokens)
 
         self._tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
-        self._model = AutoModel.from_pretrained(pretrained_model)
+        self._model = AutoModel.from_pretrained(pretrained_model, device=device)
         self._token_type_ids = True
 
     def split_context(self, target_usage: TargetUsage) -> Tuple[List[str], List[str], List[str]]:
@@ -179,7 +179,10 @@ class BERT(ContextualizedModel):
         for i in range(embeddings.size(0)):
             start, end = target_offsets['start'][i], target_offsets['end'][i]
             target_embedding = embeddings[i, start:end, :].mean(axis=0)
-            target_embeddings.append(target_embedding.detach().numpy())
+            if self._device == 'cuda':
+                target_embeddings.append(target_embedding.detach().cpu().numpy())
+            else:
+                target_embeddings.append(target_embedding.detach().numpy())
 
         return np.array(target_embeddings)
 
