@@ -34,12 +34,12 @@ class StaticModel(RepresentationModel, dict):
     def __getitem__(self, k):
         if self.space == None:
             raise Exception('Space is not loaded')
-        return self.space.matrix[self.space.row2id[k]].todense()
+        return self.space.matrix[self.space.row2id[k]]
 
     def matrix(self):
         if self.space == None:
             raise Exception('Space is not loaded')
-        return self.space.matrix.todense()
+        return self.space.matrix
 
     def row2word(self):
         if self.space == None:
