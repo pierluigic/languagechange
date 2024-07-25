@@ -78,7 +78,7 @@ class XL_LEXEME(ContextualizedModel):
         for target_usage in target_usages:
             start, end = target_usage.offsets
             start, end = int(start), int(end)
-            examples.append(InputExample(texts=target_usage.text, positions=[start, end]))
+            examples.append(InputExample(texts=target_usage.text(), positions=[start, end]))
 
         raw_embeddings = self._model.encode(examples, batch_size=batch_size, device=self._device)
         return raw_embeddings
