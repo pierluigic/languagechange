@@ -17,10 +17,12 @@ try:
 except:
     reqs = [str(ir.requirement) for ir in install_reqs]
 
-reqs.append('dload')
+
 reqs.append('LSCDetection @ git+https://git@github.com/pierluigic/LSCDetection.git')
 reqs.append('WordTransformer @ git+https://git@github.com/pierluigic/xl-lexeme.git')
-
+reqs.append('dload')
+reqs.append('scipy==1.11.4')
+reqs.append('scikit-learn==1.3.2')
 
 setuptools.setup(
     name="languagechange",
