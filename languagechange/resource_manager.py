@@ -79,16 +79,19 @@ class LanguageChange():
             destination_path = os.path.join(self.resources_dir,resource_type,resource_name,dataset,version)
             Path(destination_path).mkdir(parents=True, exist_ok=True)
             dload.save_unzip(url, destination_path)
+            return True
         except:
             print('ERROR: Cannot download the resource.')
+            return False
 
     def get_resource(self, resource_type, resource_name, dataset, version):
         path = os.path.join(self.resources_dir,resource_type,resource_name,dataset,version)
         if os.path.exists(path):
             return path
         else:
-            self.download(resource_type, resource_name, dataset, version)
-            return path
+            result = self.download(resource_type, resource_name, dataset, version)
+            if not result:
+                return None
 
     def save_resource(self, resource_type, resource_name, dataset, version):
         path = os.path.join(self.local_resources_dir,resource_type,resource_name,dataset,version)

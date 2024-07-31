@@ -47,20 +47,34 @@ class SemEval2020Task1(Benchmark):
 
 class DWUG(Benchmark):
 
-    def __init__(self, language, version):
+    def __init__(self, path=None, language=None, version=None):
         lc = LanguageChange()
-        self.language = language
-        home_path = lc.get_resource('benchmarks', 'DWUG', self.language, version)
-        dwug_folder = os.listdir(home_path)[0]
-        self.home_path = os.path.join(home_path,dwug_folder)
+        if not language == None and not version == None:
+            self.language = language
+            home_path = lc.get_resource('benchmarks', 'DWUG', self.language, version)
+            dwug_folder = os.listdir(home_path)[0]
+            self.home_path = os.path.join(home_path,dwug_folder)
+        else:
+            if not path == None and os.path.exists(path):
+                self.home_path = path
+            else:
+                raise Exception('The path is None or does not exists.')       
         self.load()
 
-    def load(self):
+    def load(self, config=None):
         self.target_words = os.listdir(os.path.join(self.home_path,'data'))
         self.stats_groupings = {}
         self.stats = {}
 
-        with open(os.path.join(self.home_path,'stats','opt','stats_groupings.csv')) as f:
+        stats_path = None
+        if not config == None:
+            stats_path = os.path.join(self.home_path,'stats',config)
+        elif os.path.exists(os.path.join(self.home_path,'stats','opt')):
+            stats_path = os.path.join(self.home_path,'stats','opt')
+        else:
+            stats_path = os.path.join(self.home_path,'stats')
+
+        with open(os.path.join(stats_path,'stats_groupings.csv')) as f:
             keys = []
             for j,line in enumerate(f):
                 line = line.replace('\n','').split('\t')
@@ -71,7 +85,7 @@ class DWUG(Benchmark):
                 else:
                     keys = line
 
-        with open(os.path.join(self.home_path,'stats','opt','stats.csv')) as f:
+        with open(os.path.join(stats_path,'stats.csv')) as f:
             keys = []
             for j,line in enumerate(f):
                 line = line.replace('\n','').split('\t')
@@ -101,7 +115,7 @@ class DWUG(Benchmark):
         with open(os.path.join(self.home_path,'graphs','opt',word),'rb') as f:
             return pickle.load(f)
 
-    def show_usage_graph(self, word):
+    def show_usage_graph(self, word, config=None):
         def run_from_ipython():
             try:
                 __IPYTHON__
@@ -109,11 +123,26 @@ class DWUG(Benchmark):
             except NameError:
                 return False
 
+        def search_plot_path(path):
+            if 'weight' in os.listdir(path):
+                return path
+            else:
+                return search_plot_path(os.path.join(path,os.listdir(path)[0]))
+
+        plot_path = None
+
+        if config == None:
+            path = search_plot_path(os.path.join(self.home_path,'plots'))
+            plot_path = os.path.join(path,'weight','full')   
+        else:
+            plot_path = os.path.join(self.home_path,'plots',config,'weight','full') 
+
+
         if not run_from_ipython():
-            webbrowser.open(os.path.join(self.home_path,'plots','opt','weight','full',f'{word}.html'))
+            webbrowser.open(os.path.join(plot_path,f'{word}.html'))
         else:
             from IPython.display import display, HTML
-            with open(os.path.join(self.home_path,'plots','opt','weight','full',f'{word}.html')) as f:
+            with open(os.path.join(plot_path,f'{word}.html')) as f:
                 html = f.read()
                 display(HTML(html))
 
