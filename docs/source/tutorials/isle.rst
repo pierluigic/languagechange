@@ -17,7 +17,13 @@ Load the two novels
    :align: center
    :alt: Step 1 overview
 
-Here we load the two novels as separate corpora, and assign them their respective publication years as time information.
+First we need the spacy library to lemmatize the corpora. 
+
+.. code-block:: bash
+   
+   python -m spacy download en_core_web_sm
+
+Then we can load the two novels as separate corpora, and assign them their respective publication years as time information. 
 
 .. code-block:: python
 
@@ -31,16 +37,14 @@ Here we load the two novels as separate corpora, and assign them their respectiv
 
    pp_corpus = LinebyLineCorpus(
       str(corpus_dir / "pp-tokens-lemmas.txt"),
-      language="english",
-      is_tokenized=True,
-      is_lemmatized=True,
+      language="en",
+      feature="lemma"
       time=LiteralTime("1813"),
    )
    lw_corpus = LinebyLineCorpus(
       str(corpus_dir / "lw-tokens-lemmas.txt"),
-      language="english",
-      is_tokenized=True,
-      is_lemmatized=True,
+      language="en",
+      feature="lemma",
       time=LiteralTime("1868"),
    )
 
