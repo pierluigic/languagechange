@@ -52,7 +52,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "github.com/ChangeIsKey/languagechange"
+Homepage = "https://github.com/ChangeIsKey/languagechange"
 
 [tool.setuptools]
 include-package-data = true
