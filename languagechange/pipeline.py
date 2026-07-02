@@ -980,21 +980,22 @@ class CDPipeline(Pipeline):
              (isinstance(self.dataset, SemEval2020Task1) and self.dataset.dataset in {"NorDiaChange", "RuShiftEval"})):
             default_time_attr = 'grouping'
             time_attr = time_attr if time_attr is not None else default_time_attr
+            if time_attr == 'grouping':
+                logging.info("Grouping by 'grouping'; not parsing years.")
+                use_year = False
             for word in all_words:
                 target_usages = self.dataset.get_word_usages(word)
                 if time_period_length:
                     sorted_usages = sorted(target_usages, key = lambda u : getattr(u, time_attr))
-                    min_y = _parse_year(getattr(sorted_usages[0], time_attr))
-                    max_y = _parse_year(getattr(sorted_usages[-1], time_attr))
+                    min_y = _parse_year(getattr(sorted_usages[0], time_attr)).time
+                    max_y = _parse_year(getattr(sorted_usages[-1], time_attr)).time
                     time_intervals = ([
-                        TimeInterval(LiteralTime(str(y)), LiteralTime(str(y + time_period_length - 1))) 
+                        TimeInterval(NumericalTime(y), NumericalTime(y + time_period_length - 1)) 
                         for y in np.arange(min_y, max_y + 1, time_period_length)])
                 if time_intervals:
-                    for u in target_usages:
-                        u.time = LiteralTime(str(u.time.time))
-                    usages_by_time = target_usages.group_by_interval(time_intervals, time_attr=time_attr, use_year=True)
+                    usages_by_time = target_usages.group_by_interval(time_intervals, time_attr=time_attr, use_year=use_year)
                 else:
-                    usages_by_time = target_usages.group_by_time(time_attr=time_attr)
+                    usages_by_time = target_usages.group_by_time(time_attr=time_attr, use_year=use_year)
                 usages[word] = usages_by_time
         
         elif isinstance(self.dataset, SemanticChangeEvaluationDataset):
@@ -1022,20 +1023,28 @@ class CDPipeline(Pipeline):
                         word_usages = concat_usages
                     if time_period_length:
                         sorted_usages = sorted(word_usages, key = lambda u : getattr(u, time_attr))
-                        min_y = _parse_year(getattr(sorted_usages[0], time_attr))
-                        max_y = _parse_year(getattr(sorted_usages[-1], time_attr))
+                        min_y = _parse_year(getattr(sorted_usages[0], time_attr)).time
+                        max_y = _parse_year(getattr(sorted_usages[-1], time_attr)).time
+                        time_type = "int" if isinstance(min_y, NumericalTime) else "str"
                         if use_year:
                             time_intervals = ([
                                 TimeInterval(
                                     LiteralTime(str(y)), 
-                                    LiteralTime(str(y + time_period_length - 1))) 
-                                for y in np.arange(min_y, max_y + 1, time_period_length)])
+                                    LiteralTime(str(y + time_period_length - 1))) if time_type == "str" else
+                                TimeInterval(
+                                    NumericalTime(y), 
+                                    NumericalTime(y + time_period_length - 1))
+                                for y in np.arange(int(min_y), int(max_y) + 1, time_period_length)])
                         else:
+                            if not time_type == "str":
+                                logging.error(f"In order to split usages by intervals according to exact dates, their "
+                                            "'{time_attr}' attributes need to be LiteralTime(str).")
+                                raise TypeError
                             time_intervals = ([
                                 TimeInterval(
                                     LiteralTime(f"{y}-01-01"), 
                                     LiteralTime(f"{y + time_period_length - 1}-12-31")) 
-                                for y in np.arange(min_y, max_y + 1, time_period_length)])
+                                for y in np.arange(int(min_y), int(max_y) + 1, time_period_length)])
                     usages_by_time = word_usages.group_by_interval(
                         time_intervals, 
                         time_attr=time_attr,
@@ -1058,8 +1067,7 @@ class CDPipeline(Pipeline):
         all_words = set(usages.keys())
 
         for word in all_words:
-            rng = np.random.default_rng(seed=random_seed)
-            usages[word] = {t: u._sample(rng, n_samples=n_sampled_usages) for t, u in usages[word].items()}
+            usages[word] = {t: u.sample(n_sampled_usages, random_seed=random_seed) for t, u in usages[word].items()}
         
         return usages
 

@@ -849,7 +849,10 @@ class DWUG(SemanticChangeEvaluationDataset):
                 u['target'].set_lemma(u['lemma'])
                 u['target'].set_pos(u['pos'])
                 u['offsets'] = [int(i) for i in u['indexes_target_token'].split(':')]
-                u['time'] = NumericalTime(u['date'])
+                try:
+                    u['time'] = NumericalTime(int(u['date']))
+                except ValueError:
+                    u['time'] = LiteralTime(str(u['date']))
                 usages.append(DWUGUsage(**u))
 
         return usages

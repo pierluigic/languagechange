@@ -48,6 +48,9 @@ class LiteralTime(Time):
     def __repr__(self):
         return self.time
 
+    def __hash__(self):
+        return hash(self.time)
+
 
 class NumericalTime(Time):
     """Numeric timestamp (e.g., time slice) that supports comparisons."""
@@ -76,6 +79,9 @@ class NumericalTime(Time):
 
     def __repr__(self):
         return str(self.time)
+
+    def __hash__(self):
+        return hash(self.time)
 
 
 class TimeInterval(Time):
@@ -116,19 +122,24 @@ class TimeInterval(Time):
     def __repr__(self):
         return f"{self.start.time} - {self.end.time}"
 
+    def __hash__(self):
+        return hash((self.start, self.end))
+
 
 def _parse_year(time : Union[str, int]):
     """
         Takes a string or Time describing a date and tries to parse it and return the year.
     """
     if isinstance(time, int):
-        return time
+        return NumericalTime(time)
     try:
         parsed = pd.to_datetime(str(time))
-        return parsed.year
+        if isinstance(time, str):
+            return LiteralTime(str(parsed.year))
+        else:
+            return NumericalTime(int(parsed.year))
     except ValueError as e:
-        logging.error(f"Could not parse the date '{str(time)}' due to {e}")
-        raise e
+        raise ValueError(f"Could not parse the date '{str(time)}'") from e
 
 
 def generate_colormap(n_classes):

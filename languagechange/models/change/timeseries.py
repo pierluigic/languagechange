@@ -235,7 +235,7 @@ class TimeSeries:
 
         if len(labels_to_plot) * max(map(len, labels_to_plot)) > 30:
             plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.plot(self.ts, self.series, marker='o')
+        ax.plot(labels, self.series, marker='o')
         if ymin is not None and ymax is not None:
             ax.set_ylim(ymin, ymax)
         elif ymin is not None:

@@ -59,7 +59,7 @@ class TargetUsage:
             logging.error("'time' has to be a NumericalTime, LiteralTime, str, int or None.")
             raise TypeError
         else:
-            time = self.time
+            self.time = time
         self.__dict__.update(kwargs)
 
     def text(self):
@@ -76,7 +76,14 @@ class TargetUsage:
 
     def to_dict(self):
         d = self.__dict__.copy()
-        d['time'] = str(d['time'])
+        t = d['time'].time
+        if isinstance(t, NumericalTime):
+            try:
+                d['time'] = int(t)
+            except ValueError:
+                d['time'] = str(t)
+        else:
+            d['time'] = str(t)
         return d
 
     def __getitem__(self, item):
@@ -99,7 +106,14 @@ class DWUGUsage(TargetUsage):
 
     def to_dict(self):
         d = self.__dict__.copy()
-        d['time'] = str(d['time'])
+        t = d['time'].time
+        if isinstance(t, NumericalTime):
+            try:
+                d['time'] = int(t)
+            except ValueError:
+                d['time'] = str(t)
+        else:
+            d['time'] = str(t)
         d['target'] = str(d['target'])
         return d
 
@@ -149,15 +163,28 @@ class TargetUsageList(list):
             raise TypeError
         for i, interval in enumerate(intervals):
             if not isinstance(interval, TimeInterval):                    
-                interval = TimeInterval(*(t if isinstance(t, Time) else LiteralTime(str(t)) for t in interval))
+                interval = TimeInterval(*(
+                    t if isinstance(t, Time) else (NumericalTime(t) if isinstance(t, int) else LiteralTime(str(t))) 
+                    for t in interval))
             if use_year:
-                interval = TimeInterval(*(LiteralTime(str(_parse_year(t))) for t in (interval.start, interval.end)))
+                try:
+                    interval = TimeInterval(*(_parse_year(t) for t in (interval.start, interval.end)))
+                except ValueError:
+                    logging.info(f"Could not parse the '{time_attr}' attributes as years. Falling back to using '{time_attr}' directly.")
+                    use_year = False
             intervals[i] = interval
 
         def get_time(u):
             u_t = getattr(u, time_attr)
-            if not isinstance(u_t, Time) or use_year:
-                u_t = LiteralTime(str(_parse_year(u_t)))
+            if use_year:
+                try:
+                    u_t = _parse_year(u_t)
+                except ValueError:
+                    logging.info(f"Could not parse the '{time_attr}' attributes as years. Falling back to using '{time_attr}' directly.")
+            elif isinstance(u_t, int):
+                u_t = NumericalTime(u_t)
+            elif not isinstance(u_t, Time):
+                u_t = LiteralTime(str(u_t))
             return u_t
 
         ins = deque(sorted(intervals))
@@ -180,7 +207,7 @@ class TargetUsageList(list):
                     u = None
             else:
                 if curr_u:
-                    t_rep = str(t.start) if t.start == t.end else str(t)
+                    t_rep = t.start if t.start == t.end else t
                     usage_dict[t_rep] = curr_u
 
                 if ins:
@@ -189,7 +216,7 @@ class TargetUsageList(list):
                 else:
                     t = None
         if curr_u and t:
-            t_rep = str(t.start) if t.start == t.end else str(t)
+            t_rep = t.start if t.start == t.end else t
             usage_dict[t_rep] = curr_u
         
         return usage_dict
@@ -215,17 +242,20 @@ class TargetUsageList(list):
         if times is None:
             if use_year:
                 try:
-                    sorted_times = sorted(set(_parse_year(getattr(u, time_attr)) for u in self))
+                    times = sorted(set(_parse_year(getattr(u, time_attr)) for u in self))
                 except ValueError:
                     logging.info(f"Could not parse the '{time_attr}' attributes as years. Falling back to using '{time_attr}' directly.")
                     use_year = False
             if not use_year:
-                sorted_times = sorted(set(str(getattr(u, time_attr)) for u in self))
-            intervals = [TimeInterval(LiteralTime(str(y)), LiteralTime(str(y))) for y in sorted_times]
-        else:
-            if all(isinstance(t, str) or isinstance(t, int) for t in times):
-                times = [LiteralTime(str(t)) for t in times]
-            intervals = [TimeInterval(t, t) for t in times]
+                times = sorted(set(getattr(u, time_attr) for u in self))
+        if all(isinstance(t, str) for t in times):
+            times = [LiteralTime(t) for t in times]
+        elif all(isinstance(t, int) for t in times):
+            times = [NumericalTime(t) for t in times]
+        if not all(isinstance(t, Time) for t in times):
+            logging.error("`times` needs to be None or a list of int, str, NumericalTime or LiteralTime.")
+            raise TypeError
+        intervals = [TimeInterval(t, t) for t in times]
         return self.group_by_interval(intervals, time_attr=time_attr, use_year=use_year)
 
     def sample(self, n_samples, random_seed=None):
@@ -238,7 +268,7 @@ class TargetUsageList(list):
         """
         rng = np.random.default_rng(seed=random_seed)
         if n_samples < len(self) and n_samples != 0:
-            return rng.choice(self, size=n_samples, replace=False).tolist()
+            return TargetUsageList(rng.choice(self, size=n_samples, replace=False).tolist())
         return self
 
     def _group_and_sample(self, groups, grouping_fn, n_samples=0, random_seed=None, time_attr="time", use_year=False):
